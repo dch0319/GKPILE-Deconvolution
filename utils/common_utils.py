@@ -189,19 +189,23 @@ def pil_to_np(img_PIL):
 
     return ar.astype(np.float32) / 255.
 
-def np_to_pil(img_np): 
+def np_to_pil(img_np):
     '''Converts image in np.array format to PIL image.
-    
-    From C x W x H [0..1] to  W x H x C [0...255]
+
+    From H x W x C [0..1] to  H x W x C [0...255]
     '''
-    ar = np.clip(img_np*255,0,255).astype(np.uint8)
-    
-    if img_np.shape[0] == 1:
-        ar = ar[0]
-    else:
-        ar = ar.transpose(1, 2, 0)
+    ar = np.clip(img_np * 255, 0, 255).astype(np.uint8)
+    if len(img_np.shape) == 3:
+        if img_np.shape[2] == 1:
+            ar = ar[2]
+        else:
+            ar = ar  # .transpose(1, 2, 0)
 
     return Image.fromarray(ar)
+
+def save_img_np(save_dir, img_np):
+    img_pil = np_to_pil(img_np)
+    img_pil.save(save_dir)
 
 def np_to_torch(img_np):
     '''Converts image in numpy.array to torch.Tensor.

@@ -124,7 +124,7 @@ for f in files_source:
     out_k_np = torch_to_np(out_k)
     out_k_np = out_k_np.squeeze()
     out_k_np /= np.max(out_k_np)
-    imsave(save_path, out_k_np)
+    save_img_np(save_path, out_k_np)
 
     for step in tqdm(range(num_iter)):
 
@@ -153,9 +153,9 @@ for f in files_source:
             out_x_np = torch_to_np(out_x).transpose(1, 2, 0)
             out_x_np = out_x_np[padh // 2:padh // 2 + img_size[1], padw // 2:padw // 2 + img_size[2], 0:3]
             save_path = os.path.join(new_path, '%d_x.png' % (step+1))
-            imsave(save_path, out_x_np)
+            save_img_np(save_path, out_x_np)
             save_path = os.path.join(new_path, '%d_k.png' % (step+1))
             out_k_np = torch_to_np(out_k)
             out_k_np = out_k_np.squeeze()
             out_k_np /= np.max(out_k_np)
-            imsave(save_path, out_k_np)
+            save_img_np(save_path, out_k_np)

@@ -1,4 +1,3 @@
-
 import random
 import os
 import argparse
@@ -32,13 +31,13 @@ torch.cuda.manual_seed(opt.seed)
 os.makedirs(opt.save_path, exist_ok=True)
 os.makedirs(opt.log_dir, exist_ok=True)
 
-def train(kernel_size, kernel_path):
 
+def train(kernel_size, kernel_path):
     model_file_name = 'netG_{}.pth'.format(kernel_size)
     if os.path.exists(opt.save_path + '/' + model_file_name):
         print('The file %s already exists !' % model_file_name)
         return
-    
+
     log_path = os.path.join(opt.log_dir, 'netG%d' % kernel_size)
     writer = SummaryWriter(log_path)
     kernel_dataset = Kernel(kernel_path)
@@ -92,25 +91,22 @@ def train(kernel_size, kernel_path):
 
             if i % 200 == 0:
                 print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f'
-                    % (epoch, opt.num_epochs, i, len(loader),
-                        errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
+                      % (epoch, opt.num_epochs, i, len(loader),
+                         errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
 
             if i == len(loader) - 1:
                 with torch.no_grad():
                     fake = netG(fixed_noise)
                 writer.add_image('fake', vutils.make_grid(fake, nrow=8, padding=2, normalize=True), epoch)
-                #writer.add_image('real', vutils.make_grid(real_cpu[:64], nrow=8, padding=2, normalize=True), epoch)
+                # writer.add_image('real', vutils.make_grid(real_cpu[:64], nrow=8, padding=2, normalize=True), epoch)
 
     torch.save(netG.state_dict(), os.path.join(opt.save_path, model_file_name))
     writer.close()
 
 
 if __name__ == '__main__':
-    
-    #train(kernel_size = 31, kernel_path='./datasets/kernel/lai31.npz')
-    #train(kernel_size = 55, kernel_path='./datasets/kernel/lai55.npz')
-    #train(kernel_size = 75, kernel_path='./datasets/kernel/lai75.npz')
+    train(kernel_size=31, kernel_path='./datasets/kernel/lai31.npz')
+    train(kernel_size=55, kernel_path='./datasets/kernel/lai55.npz')
+    train(kernel_size=75, kernel_path='./datasets/kernel/lai75.npz')
 
-    train(opt.kernel_size, opt.kernel_path)
-    
-    
+    # train(opt.kernel_size, opt.kernel_path)
