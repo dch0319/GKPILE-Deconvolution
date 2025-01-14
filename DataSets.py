@@ -25,6 +25,7 @@ class Kernel(Dataset):
     def __init__(self, data_path):
         super().__init__()
         data = np.load(data_path)
+        a = data['arr_0']
         self.kernel_list = data['arr_0']
 
     def __len__(self):

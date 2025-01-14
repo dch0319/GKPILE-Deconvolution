@@ -44,10 +44,10 @@ def train(kernel_size, kernel_path):
     model_file_name = 'netE_{}.pth'.format(kernel_size)
     if os.path.exists(opt.save_path + '/' + model_file_name):
         print('The file %s already exists !' % model_file_name)
-        return
+        #return
     
-    log_path = os.path.join(opt.log_dir, 'netE%d' % kernel_size)
-    writer = SummaryWriter(log_path)
+    #log_path = os.path.join(opt.log_dir, 'netE%d' % kernel_size)
+    #writer = SummaryWriter(log_path)
     netD_path = os.path.join(opt.save_path, './netG_{}.pth'.format(kernel_size))
 
     img_set = Openimage(opt.clean_img_path, 256)
@@ -59,6 +59,9 @@ def train(kernel_size, kernel_path):
     netE = ResNet18().cuda()
     netG = Generator(kernel_size).cuda()
     netG.load_state_dict(torch.load(netD_path))
+    # # 使用 DataParallel 包装模型
+    # netE = nn.DataParallel(netE)
+    # netG = nn.DataParallel(netG)
     netG.eval()
     for p in netG.parameters(): p.requires_grad = False
 
@@ -107,21 +110,21 @@ def train(kernel_size, kernel_path):
             optimizerE.step()
 
         print('[%d/%d]\tLoss: %.6f' % (epoch, opt.num_epochs, np.mean(epoch_loss)))
-        writer.add_image('groundtruth', vutils.make_grid(kernel[:16], padding=2, normalize=True, nrow=4), epoch)
-        writer.add_image('result', vutils.make_grid(output[:16], padding=2, normalize=True, nrow=4), epoch)
-        writer.add_scalar("loss", np.mean(epoch_loss), epoch)
-        writer.add_scalar("loss1", np.mean(epoch_loss1), epoch)
-        writer.add_scalar("loss2", np.mean(epoch_loss2), epoch)
+        # writer.add_image('groundtruth', vutils.make_grid(kernel[:16], padding=2, normalize=True, nrow=4), epoch)
+        # writer.add_image('result', vutils.make_grid(output[:16], padding=2, normalize=True, nrow=4), epoch)
+        # writer.add_scalar("loss", np.mean(epoch_loss), epoch)
+        # writer.add_scalar("loss1", np.mean(epoch_loss1), epoch)
+        # writer.add_scalar("loss2", np.mean(epoch_loss2), epoch)
         scheduler.step()
 
     torch.save(netE.state_dict(), os.path.join(opt.save_path, model_file_name))
-    writer.close()
+    #writer.close()
 
 
 if __name__ == '__main__':
     
-    #train(kernel_size = 31, kernel_path='./datasets/kernel/lai31.npz')
+    train(kernel_size = 31, kernel_path='./datasets/kernel/lai31.npz')
     #train(kernel_size = 55, kernel_path='./datasets/kernel/lai55.npz')
     #train(kernel_size = 75, kernel_path='./datasets/kernel/lai75.npz')
 
-    train(opt.kernel_size, opt.kernel_path)
+    #train(opt.kernel_size, opt.kernel_path)

@@ -36,7 +36,7 @@ def train(kernel_size, kernel_path):
     model_file_name = 'netG_{}.pth'.format(kernel_size)
     if os.path.exists(opt.save_path + '/' + model_file_name):
         print('The file %s already exists !' % model_file_name)
-        return
+        #return
 
     log_path = os.path.join(opt.log_dir, 'netG%d' % kernel_size)
     writer = SummaryWriter(log_path)
@@ -44,9 +44,11 @@ def train(kernel_size, kernel_path):
     loader = DataLoader(dataset=kernel_dataset, batch_size=opt.batch_size, shuffle=True)
 
     netG = Generator(kernel_size).cuda()
+    # netG = nn.DataParallel(netG)
     netG.apply(weights_init)
 
     netD = Discriminator(kernel_size).cuda()
+    # netD = nn.DataParallel(netD)
     netD.apply(weights_init)
 
     criterion = nn.BCELoss()
